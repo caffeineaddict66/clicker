@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clicker Clicker</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --light: #f0f0f0;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --info: #2196F3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 28px;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-img::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .logo-text {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--highlight), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 140px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, var(--highlight), var(--gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-box:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        .clicker-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .clicker-title {
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(to right, var(--light), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .clicker {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-bottom: 30px;
+            position: relative;
+            transition: transform 0.1s, box-shadow 0.3s;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+            user-select: none;
+            overflow: hidden;
+        }
+        
+        .clicker::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .clicker:hover::before {
+            opacity: 1;
+        }
+        
+        .clicker:active {
+            transform: scale(0.95);
+        }
+        
+        .clicker-inner {
+            width: 80%;
+            height: 80%;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .click-effect {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: clickAnimation 0.5s ease-out;
+        }
+        
+        @keyframes clickAnimation {
+            0% {
+                transform: scale(0);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+        
+        .click-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .click-stat {
+            text-align: center;
+        }
+        
+        .click-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--success);
+        }
+        
+        .upgrades-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--gold);
+        }
+        
+        .upgrade {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upgrade::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--highlight);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .upgrade:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .upgrade:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .upgrade-purchased {
+            background: rgba(46, 204, 113, 0.15);
+        }
+        
+        .upgrade-purchased::before {
+            background: var(--success);
+            transform: scaleY(1);
+        }
+        
+        .upgrade-info {
+            flex: 1;
+        }
+        
+        .upgrade-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--light);
+        }
+        
+        .upgrade-desc {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .upgrade-cost {
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 18px;
+        }
+        
+        .achievements-section {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .achievement {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .achievement::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .achievement.unlocked {
+            opacity: 1;
+            background: rgba(241, 196, 15, 0.15);
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .achievement.unlocked::before {
+            animation: shine 2s infinite;
+        }
+        
+        .achievement-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--light);
+        }
+        
+        .achievement-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .achievement-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .achievement-progress-bar {
+            height: 100%;
+            background: var(--highlight);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+        
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .prestige-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        .prestige-button {
+            background: linear-gradient(to right, var(--highlight), var(--warning));
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prestige-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .prestige-button:hover::before {
+            animation: shine 1.5s;
+        }
+        
+        .prestige-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+        
+        .prestige-button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .prestige-button:disabled::before {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(150%);
+            transition: transform 0.5s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 8px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: var(--accent);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .boost-active {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .upgrades-section {
+                max-height: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stat-box {
+                min-width: auto;
+                flex: 1;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .tab-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles-container" id="particles"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-img">C</div>
+                <div class="logo-text">Clicker Clicker</div>
+            </div>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Clicks</div>
+                    <div class="stat-value" id="clicks">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Clicks/Sec</div>
+                    <div class="stat-value" id="cps">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Prestige</div>
+                    <div class="stat-value" id="prestige">0</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="clicker-section">
+                <div id="boost-indicator" class="boost-active" style="display: none;">
+                    <span>⚡</span> <span id="boost-text">Boost Active!</span>
+                </div>
+                <h2 class="clicker-title">Click the Cursor!</h2>
+                <div class="clicker" id="clicker">
+                    <div class="clicker-inner">CLICK</div>
+                </div>
+                <div class="click-stats">
+                    <div class="click-stat">
+                        <div class="click-stat-label">Click Power</div>
+                        <div class="click-stat-value" id="click-power">1</div>
+                    </div>
+                    <div class="click-stat">
+                        <div class="click-stat-label">Auto Clickers</div>
+                        <div class="click-stat-value" id="auto-clickers">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="upgrades-section">
+                <div class="tab-container">
+                    <div class="tab active" data-tab="clicker">Cursor</div>
+                    <div class="tab" data-tab="auto">Auto</div>
+                    <div class="tab" data-tab="boost">Boost</div>
+                </div>
+                
+                <div class="tab-content active" id="clicker-tab">
+                    <h3 class="section-title">Cursor Upgrades</h3>
+                    <div id="clicker-upgrades">
+                        <!-- Clicker upgrades will be generated here -->
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="auto-tab">
+                    <h3 class="section-title">Auto Clickers</h3>
+                    <div id="auto-upgrades">
+                        <!-- Auto clicker upgrades will be generated here -->
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="boost-tab">
+                    <h3 class="section-title">Boosters</h3>
+                    <div id="boost-upgrades">
+                        <!-- Boost upgrades will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="prestige-section">
+            <h3 class="section-title">Prestige System</h3>
+            <p>Reset your progress to gain prestige points and permanent bonuses!</p>
+            <button class="prestige-button" id="prestige-button" disabled>Prestige (Requires 10,000 clicks)</button>
+            <p>Prestige Points: <span id="prestige-points">0</span></p>
+            <p>Prestige Bonus: <span id="prestige-bonus">1x</span></p>
+        </div>
+        
+        <div class="achievements-section">
+            <h3 class="section-title">Achievements</h3>
+            <div class="achievements-grid" id="achievements-grid">
+                <!-- Achievements will be generated here -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <span class="notification-icon">🏆</span>
+        <span id="notification-text">Achievement Unlocked!</span>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            clicks: 0,
+            clickPower: 1,
+            autoClickers: 0,
+            cps: 0,
+            prestige: 0,
+            prestigePoints: 0,
+            prestigeBonus: 1,
+            achievements: {},
+            upgrades: {},
+            activeBoosts: [],
+            lastUpdate: Date.now()
+        };
+
+        // Initialize upgrades
+        const upgrades = {
+            clicker: [
+                { id: 'click1', name: 'Reinforced Clicker', desc: 'Double your click power', cost: 10, power: 2, purchased: false },
+                { id: 'click2', name: 'Enhanced Cursor', desc: 'Triple your click power', cost: 50, power: 3, purchased: false },
+                { id: 'click3', name: 'Laser Pointer', desc: '5x click power', cost: 200, power: 5, purchased: false },
+                { id: 'click4', name: 'Quantum Clicker', desc: '10x click power', cost: 1000, power: 10, purchased: false },
+                { id: 'click5', name: 'Reality Warper', desc: '25x click power', cost: 5000, power: 25, purchased: false },
+                { id: 'click6', name: 'God Cursor', desc: '100x click power', cost: 25000, power: 100, purchased: false },
+                { id: 'click7', name: 'Cosmic Pointer', desc: '250x click power', cost: 100000, power: 250, purchased: false },
+                { id: 'click8', name: 'Omni-Clicker', desc: '500x click power', cost: 500000, power: 500, purchased: false },
+                { id: 'click9', name: 'Infinity Clicker', desc: '1000x click power', cost: 2000000, power: 1000, purchased: false }
+            ],
+            auto: [
+                { id: 'auto1', name: 'Auto Clicker I', desc: 'Automatically clicks once per second', cost: 25, cps: 1, purchased: false },
+                { id: 'auto2', name: 'Auto Clicker II', desc: 'Adds 2 clicks per second', cost: 100, cps: 2, purchased: false },
+                { id: 'auto3', name: 'Auto Clicker III', desc: 'Adds 5 clicks per second', cost: 500, cps: 5, purchased: false },
+                { id: 'auto4', name: 'Auto Clicker IV', desc: 'Adds 10 clicks per second', cost: 2000, cps: 10, purchased: false },
+                { id: 'auto5', name: 'Auto Clicker V', desc: 'Adds 25 clicks per second', cost: 10000, cps: 25, purchased: false },
+                { id: 'auto6', name: 'Auto Clicker VI', desc: 'Adds 50 clicks per second', cost: 50000, cps: 50, purchased: false },
+                { id: 'auto7', name: 'Auto Clicker VII', desc: 'Adds 100 clicks per second', cost: 200000, cps: 100, purchased: false },
+                { id: 'auto8', name: 'Auto Clicker VIII', desc: 'Adds 250 clicks per second', cost: 1000000, cps: 250, purchased: false },
+                { id: 'auto9', name: 'Auto Clicker IX', desc: 'Adds 500 clicks per second', cost: 5000000, cps: 500, purchased: false }
+            ],
+            boost: [
+                { id: 'boost1', name: 'Click Frenzy', desc: 'Doubles your CPS for 30 seconds', cost: 100, duration: 30, multiplier: 2, purchased: false, cooldown: 0 },
+                { id: 'boost2', name: 'Power Surge', desc: 'Triple CPS for 20 seconds', cost: 500, duration: 20, multiplier: 3, purchased: false, cooldown: 0 },
+                { id: 'boost3', name: 'Mega Boost', desc: '10x CPS for 10 seconds', cost: 2000, duration: 10, multiplier: 10, purchased: false, cooldown: 0 },
+                { id: 'boost4', name: 'Golden Hour', desc: '50x CPS for 5 seconds', cost: 10000, duration: 5, multiplier: 50, purchased: false, cooldown: 0 },
+                { id: 'boost5', name: 'Infinity Boost', desc: '100x CPS for 3 seconds', cost: 50000, duration: 3, multiplier: 100, purchased: false, cooldown: 0 }
+            ]
+        };
+
+        // Creative achievement names
+        const achievements = [
+            { id: 'first_click', name: 'First Steps', desc: 'Make your first click', requirement: 1, unlocked: false, icon: '👣' },
+            { id: 'hundred_clicks', name: 'Century Club', desc: 'Reach 100 clicks', requirement: 100, unlocked: false, icon: '💯' },
+            { id: 'thousand_clicks', name: 'Millennial', desc: 'Reach 1,000 clicks', requirement: 1000, unlocked: false, icon: '📜' },
+            { id: 'ten_thousand', name: 'Myriad', desc: 'Reach 10,000 clicks', requirement: 10000, unlocked: false, icon: '🌌' },
+            { id: 'hundred_thousand', name: 'Six Figures', desc: 'Reach 100,000 clicks', requirement: 100000, unlocked: false, icon: '💰' },
+            { id: 'million', name: 'Millionaire', desc: 'Reach 1,000,000 clicks', requirement: 1000000, unlocked: false, icon: '🦄' },
+            { id: 'billion', name: 'Billionaire', desc: 'Reach 1,000,000,000 clicks', requirement: 1000000000, unlocked: false, icon: '🚀' },
+            { id: 'first_upgrade', name: 'Upgrade Initiate', desc: 'Purchase your first upgrade', requirement: -1, unlocked: false, icon: '🛒' },
+            { id: 'five_upgrades', name: 'Upgrade Collector', desc: 'Purchase 5 upgrades', requirement: -1, unlocked: false, icon: '🛍️' },
+            { id: 'all_upgrades', name: 'Ultimate Upgrader', desc: 'Purchase all upgrades', requirement: -1, unlocked: false, icon: '🏆' },
+            { id: 'first_auto', name: 'Automation Begins', desc: 'Purchase your first auto-clicker', requirement: -1, unlocked: false, icon: '⚙️' },
+            { id: 'ten_auto', name: 'Automation Expert', desc: 'Purchase 10 auto-clickers', requirement: -1, unlocked: false, icon: '🔧' },
+            { id: 'fifty_auto', name: 'Automation Master', desc: 'Purchase 50 auto-clickers', requirement: -1, unlocked: false, icon: '🏭' },
+            { id: 'first_boost', name: 'Power Up!', desc: 'Activate your first boost', requirement: -1, unlocked: false, icon: '⚡' },
+            { id: 'ten_boosts', name: 'Boost Enthusiast', desc: 'Activate 10 boosts', requirement: -1, unlocked: false, icon: '🎇' },
+            { id: 'fifty_boosts', name: 'Boost Master', desc: 'Activate 50 boosts', requirement: -1, unlocked: false, icon: '🎆' },
+            { id: 'first_prestige', name: 'Ascension', desc: 'Prestige for the first time', requirement: -1, unlocked: false, icon: '✨' },
+            { id: 'five_prestige', name: 'Transcendence', desc: 'Prestige 5 times', requirement: -1, unlocked: false, icon: '🌟' },
+            { id: 'ten_prestige', name: 'Nirvana', desc: 'Prestige 10 times', requirement: -1, unlocked: false, icon: '💫' },
+            { id: 'click_frenzy', name: 'Frenzied', desc: 'Activate Click Frenzy 10 times', requirement: -1, unlocked: false, icon: '🌀' },
+            { id: 'power_surge', name: 'Surge Protector', desc: 'Activate Power Surge 10 times', requirement: -1, unlocked: false, icon: '🌊' },
+            { id: 'mega_boost', name: 'Mega Power', desc: 'Activate Mega Boost 10 times', requirement: -1, unlocked: false, icon: '💥' },
+            { id: 'golden_hour', name: 'Golden Touch', desc: 'Activate Golden Hour 10 times', requirement: -1, unlocked: false, icon: '🟡' },
+            { id: 'infinity_boost', name: 'Infinite Power', desc: 'Activate Infinity Boost 10 times', requirement: -1, unlocked: false, icon: '♾️' },
+            { id: 'fast_clicker', name: 'Rapid Fire', desc: 'Click 10 times in 1 second', requirement: -1, unlocked: false, icon: '🎯' },
+            { id: 'super_fast', name: 'Lightning Fast', desc: 'Click 20 times in 1 second', requirement: -1, unlocked: false, icon: '⚡' },
+            { id: 'ultra_fast', name: 'Speed Demon', desc: 'Click 50 times in 1 second', requirement: -1, unlocked: false, icon: '👹' },
+            { id: 'cps_100', name: 'Century Per Second', desc: 'Reach 100 clicks per second', requirement: -1, unlocked: false, icon: '💨' },
+            { id: 'cps_1000', name: 'Millennium Per Second', desc: 'Reach 1,000 clicks per second', requirement: -1, unlocked: false, icon: '🌪️' },
+            { id: 'cps_10000', name: 'Myriad Per Second', desc: 'Reach 10,000 clicks per second', requirement: -1, unlocked: false, icon: '🌠' },
+            { id: 'click_power_10', name: 'Deca-Click', desc: 'Reach 10 click power', requirement: -1, unlocked: false, icon: '✋' },
+            { id: 'click_power_100', name: 'Hecto-Click', desc: 'Reach 100 click power', requirement: -1, unlocked: false, icon: '💪' },
+            { id: 'click_power_1000', name: 'Kilo-Click', desc: 'Reach 1,000 click power', requirement: -1, unlocked: false, icon: '🦾' },
+            { id: 'click_power_10000', name: 'Mega-Click', desc: 'Reach 10,000 click power', requirement: -1, unlocked: false, icon: '🤖' },
+            { id: 'idle_gamer', name: 'Idle Gamer', desc: 'Earn 1,000 clicks without clicking', requirement: -1, unlocked: false, icon: '😴' },
+            { id: 'afk_master', name: 'AFK Master', desc: 'Earn 10,000 clicks without clicking', requirement: -1, unlocked: false, icon: '🛌' },
+            { id: 'passive_income', name: 'Passive Income', desc: 'Earn 100,000 clicks without clicking', requirement: -1, unlocked: false, icon: '💼' },
+            { id: 'early_bird', name: 'Early Bird', desc: 'Play the game within 24 hours of starting', requirement: -1, unlocked: false, icon: '🐦' },
+            { id: 'night_owl', name: 'Night Owl', desc: 'Play the game between midnight and 5 AM', requirement: -1, unlocked: false, icon: '🦉' },
+            { id: 'weekend_warrior', name: 'Weekend Warrior', desc: 'Play the game on a weekend', requirement: -1, unlocked: false, icon: '🎮' },
+            { id: 'dedicated', name: 'Dedicated', desc: 'Play for 7 consecutive days', requirement: -1, unlocked: false, icon: '📅' },
+            { id: 'addicted', name: 'Addicted', desc: 'Play for 30 consecutive days', requirement: -1, unlocked: false, icon: '🔮' },
+            { id: 'completionist', name: 'Completionist', desc: 'Unlock all achievements', requirement: -1, unlocked: false, icon: '🎖️' }
+        ];
+
+        // DOM elements
+        const clicker = document.getElementById('clicker');
+        const clicksDisplay = document.getElementById('clicks');
+        const cpsDisplay = document.getElementById('cps');
+        const clickPowerDisplay = document.getElementById('click-power');
+        const autoClickersDisplay = document.getElementById('auto-clickers');
+        const prestigeDisplay = document.getElementById('prestige');
+        const prestigePointsDisplay = document.getElementById('prestige-points');
+        const prestigeBonusDisplay = document.getElementById('prestige-bonus');
+        const prestigeButton = document.getElementById('prestige-button');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        const particlesContainer = document.getElementById('particles');
+        const clickerUpgradesContainer = document.getElementById('clicker-upgrades');
+        const autoUpgradesContainer = document.getElementById('auto-upgrades');
+        const boostUpgradesContainer = document.getElementById('boost-upgrades');
+        const achievementsGrid = document.getElementById('achievements-grid');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const boostIndicator = document.getElementById('boost-indicator');
+        const boostText = document.getElementById('boost-text');
+
+        // Game variables
+        let totalUpgradesPurchased = 0;
+        let totalAutoClickersPurchased = 0;
+        let totalBoostsActivated = 0;
+        let totalPrestiges = 0;
+        let clickCount = 0;
+        let lastClickTime = 0;
+        let clicksInSecond = 0;
+
+        // Initialize the game
+        function initGame() {
+            loadGame();
+            renderUpgrades();
+            renderAchievements();
+            createParticles();
+            setupEventListeners();
+            gameLoop();
+        }
+
+        // Load game state from localStorage
+        function loadGame() {
+            const saved = localStorage.getItem('clickerClickerSave');
+            if (saved) {
+                const savedState = JSON.parse(saved);
+                Object.assign(gameState, savedState);
+                updateDisplays();
+            }
+        }
+
+        // Save game state to localStorage
+        function saveGame() {
+            localStorage.setItem('clickerClickerSave', JSON.stringify(gameState));
+        }
+
+        // Update all displays
+        function updateDisplays() {
+            clicksDisplay.textContent = formatNumber(gameState.clicks);
+            cpsDisplay.textContent = formatNumber(gameState.cps);
+            clickPowerDisplay.textContent = formatNumber(gameState.clickPower * gameState.prestigeBonus);
+            autoClickersDisplay.textContent = gameState.autoClickers;
+            prestigeDisplay.textContent = gameState.prestige;
+            prestigePointsDisplay.textContent = gameState.prestigePoints;
+            prestigeBonusDisplay.textContent = `${gameState.prestigeBonus}x`;
+            
+            // Update prestige button state
+            prestigeButton.disabled = gameState.clicks < 10000;
+        }
+
+        // Format large numbers
+        function formatNumber(num) {
+            if (num < 1000) return Math.floor(num);
+            if (num < 1000000) return (num / 1000).toFixed(1) + 'K';
+            if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num < 1000000000000) return (num / 1000000000).toFixed(1) + 'B';
+            return (num / 1000000000000).toFixed(1) + 'T';
+        }
+
+        // Render upgrades
+        function renderUpgrades() {
+            renderUpgradeCategory('clicker', clickerUpgradesContainer);
+            renderUpgradeCategory('auto', autoUpgradesContainer);
+            renderUpgradeCategory('boost', boostUpgradesContainer);
+        }
+
+        // Render a specific category of upgrades
+        function renderUpgradeCategory(category, container) {
+            container.innerHTML = '';
+            upgrades[category].forEach(upgrade => {
+                const upgradeElement = document.createElement('div');
+                upgradeElement.className = `upgrade ${upgrade.purchased ? 'upgrade-purchased' : ''}`;
+                upgradeElement.innerHTML = `
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">${upgrade.name}</div>
+                        <div class="upgrade-desc">${upgrade.desc}</div>
+                    </div>
+                    <div class="upgrade-cost">${formatNumber(upgrade.cost)}</div>
+                `;
+                
+                if (!upgrade.purchased) {
+                    upgradeElement.addEventListener('click', () => purchaseUpgrade(category, upgrade.id));
+                }
+                
+                container.appendChild(upgradeElement);
+            });
+        }
+
+        // Purchase an upgrade
+        function purchaseUpgrade(category, upgradeId) {
+            const upgrade = upgrades[category].find(u => u.id === upgradeId);
+            
+            if (!upgrade || upgrade.purchased || gameState.clicks < upgrade.cost) return;
+            
+            gameState.clicks -= upgrade.cost;
+            upgrade.purchased = true;
+            totalUpgradesPurchased++;
+            
+            // Apply upgrade effect
+            if (category === 'clicker') {
+                gameState.clickPower *= upgrade.power;
+            } else if (category === 'auto') {
+                gameState.autoClickers += upgrade.cps;
+                gameState.cps += upgrade.cps;
+                totalAutoClickersPurchased++;
+            } else if (category === 'boost') {
+                // Boosters are handled separately
+            }
+            
+            // Show purchase effect
+            showClickEffect(upgrade.name);
+            
+            updateDisplays();
+            renderUpgrades();
+            checkAchievements();
+            saveGame();
+        }
+
+        // Activate a boost
+        function activateBoost(boostId) {
+            const boost = upgrades.boost.find(b => b.id === boostId);
+            
+            if (!boost || gameState.clicks < boost.cost) return;
+            
+            gameState.clicks -= boost.cost;
+            totalBoostsActivated++;
+            
+            // Add boost to active boosts
+            const boostEndTime = Date.now() + (boost.duration * 1000);
+            gameState.activeBoosts.push({
+                id: boostId,
+                multiplier: boost.multiplier,
+                endTime: boostEndTime
+            });
+            
+            // Update boost indicator
+            updateBoostIndicator();
+            
+            // Show activation effect
+            showClickEffect(`${boost.name} Activated!`);
+            
+            updateDisplays();
+            renderUpgrades();
+            checkAchievements();
+            saveGame();
+        }
+
+        // Update boost indicator
+        function updateBoostIndicator() {
+            if (gameState.activeBoosts.length > 0) {
+                const totalMultiplier = gameState.activeBoosts.reduce((total, boost) => total * boost.multiplier, 1);
+                boostText.textContent = `Boost Active! (${totalMultiplier.toFixed(1)}x)`;
+                boostIndicator.style.display = 'flex';
+            } else {
+                boostIndicator.style.display = 'none';
+            }
+        }
+
+        // Render achievements
+        function renderAchievements() {
+            achievementsGrid.innerHTML = '';
+            achievements.forEach(achievement => {
+                const progress = calculateAchievementProgress(achievement);
+                const achievementElement = document.createElement('div');
+                achievementElement.className = `achievement ${achievement.unlocked ? 'unlocked' : ''}`;
+                achievementElement.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-desc">${achievement.desc}</div>
+                    ${!achievement.unlocked && progress > 0 ? `
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                    ` : ''}
+                `;
+                achievementsGrid.appendChild(achievementElement);
+            });
+        }
+
+        // Calculate achievement progress
+        function calculateAchievementProgress(achievement) {
+            if (achievement.unlocked) return 100;
+            
+            switch(achievement.id) {
+                case 'first_click':
+                case 'hundred_clicks':
+                case 'thousand_clicks':
+                case 'ten_thousand':
+                case 'hundred_thousand':
+                case 'million':
+                case 'billion':
+                    return Math.min(100, (gameState.clicks / achievement.requirement) * 100);
+                case 'first_upgrade':
+                case 'five_upgrades':
+                case 'all_upgrades':
+                    const target = achievement.id === 'first_upgrade' ? 1 : 
+                                  achievement.id === 'five_upgrades' ? 5 : 
+                                  Object.values(upgrades).flat().length;
+                    return Math.min(100, (totalUpgradesPurchased / target) * 100);
+                case 'first_auto':
+                case 'ten_auto':
+                case 'fifty_auto':
+                    const autoTarget = achievement.id === 'first_auto' ? 1 : 
+                                      achievement.id === 'ten_auto' ? 10 : 50;
+                    return Math.min(100, (totalAutoClickersPurchased / autoTarget) * 100);
+                case 'first_boost':
+                case 'ten_boosts':
+                case 'fifty_boosts':
+                    const boostTarget = achievement.id === 'first_boost' ? 1 : 
+                                       achievement.id === 'ten_boosts' ? 10 : 50;
+                    return Math.min(100, (totalBoostsActivated / boostTarget) * 100);
+                case 'first_prestige':
+                case 'five_prestige':
+                case 'ten_prestige':
+                    const prestigeTarget = achievement.id === 'first_prestige' ? 1 : 
+                                          achievement.id === 'five_prestige' ? 5 : 10;
+                    return Math.min(100, (totalPrestiges / prestigeTarget) * 100);
+                case 'cps_100':
+                case 'cps_1000':
+                case 'cps_10000':
+                    const cpsTarget = achievement.id === 'cps_100' ? 100 : 
+                                     achievement.id === 'cps_1000' ? 1000 : 10000;
+                    return Math.min(100, (gameState.cps / cpsTarget) * 100);
+                case 'click_power_10':
+                case 'click_power_100':
+                case 'click_power_1000':
+                case 'click_power_10000':
+                    const powerTarget = achievement.id === 'click_power_10' ? 10 : 
+                                       achievement.id === 'click_power_100' ? 100 : 
+                                       achievement.id === 'click_power_1000' ? 1000 : 10000;
+                    return Math.min(100, (gameState.clickPower / powerTarget) * 100);
+                default:
+                    return 0;
+            }
+        }
+
+        // Check for achievement unlocks
+        function checkAchievements() {
+            let newAchievements = [];
+            
+            achievements.forEach(achievement => {
+                if (!achievement.unlocked) {
+                    let unlocked = false;
+                    
+                    switch(achievement.id) {
+                        case 'first_click':
+                            unlocked = gameState.clicks >= 1;
+                            break;
+                        case 'hundred_clicks':
+                            unlocked = gameState.clicks >= 100;
+                            break;
+                        case 'thousand_clicks':
+                            unlocked = gameState.clicks >= 1000;
+                            break;
+                        case 'ten_thousand':
+                            unlocked = gameState.clicks >= 10000;
+                            break;
+                        case 'hundred_thousand':
+                            unlocked = gameState.clicks >= 100000;
+                            break;
+                        case 'million':
+                            unlocked = gameState.clicks >= 1000000;
+                            break;
+                        case 'billion':
+                            unlocked = gameState.clicks >= 1000000000;
+                            break;
+                        case 'first_upgrade':
+                            unlocked = totalUpgradesPurchased >= 1;
+                            break;
+                        case 'five_upgrades':
+                            unlocked = totalUpgradesPurchased >= 5;
+                            break;
+                        case 'all_upgrades':
+                            unlocked = totalUpgradesPurchased >= Object.values(upgrades).flat().length;
+                            break;
+                        case 'first_auto':
+                            unlocked = totalAutoClickersPurchased >= 1;
+                            break;
+                        case 'ten_auto':
+                            unlocked = totalAutoClickersPurchased >= 10;
+                            break;
+                        case 'fifty_auto':
+                            unlocked = totalAutoClickersPurchased >= 50;
+                            break;
+                        case 'first_boost':
+                            unlocked = totalBoostsActivated >= 1;
+                            break;
+                        case 'ten_boosts':
+                            unlocked = totalBoostsActivated >= 10;
+                            break;
+                        case 'fifty_boosts':
+                            unlocked = totalBoostsActivated >= 50;
+                            break;
+                        case 'first_prestige':
+                            unlocked = totalPrestiges >= 1;
+                            break;
+                        case 'five_prestige':
+                            unlocked = totalPrestiges >= 5;
+                            break;
+                        case 'ten_prestige':
+                            unlocked = totalPrestiges >= 10;
+                            break;
+                        case 'cps_100':
+                            unlocked = gameState.cps >= 100;
+                            break;
+                        case 'cps_1000':
+                            unlocked = gameState.cps >= 1000;
+                            break;
+                        case 'cps_10000':
+                            unlocked = gameState.cps >= 10000;
+                            break;
+                        case 'click_power_10':
+                            unlocked = gameState.clickPower >= 10;
+                            break;
+                        case 'click_power_100':
+                            unlocked = gameState.clickPower >= 100;
+                            break;
+                        case 'click_power_1000':
+                            unlocked = gameState.clickPower >= 1000;
+                            break;
+                        case 'click_power_10000':
+                            unlocked = gameState.clickPower >= 10000;
+                            break;
+                        case 'fast_clicker':
+                            unlocked = clicksInSecond >= 10;
+                            break;
+                        case 'super_fast':
+                            unlocked = clicksInSecond >= 20;
+                            break;
+                        case 'ultra_fast':
+                            unlocked = clicksInSecond >= 50;
+                            break;
+                        default:
+                            unlocked = false;
+                    }
+                    
+                    if (unlocked) {
+                        achievement.unlocked = true;
+                        newAchievements.push(achievement);
+                    }
+                }
+            });
+            
+            // Show notifications for new achievements
+            if (newAchievements.length > 0) {
+                showNotification(`Achievement Unlocked: ${newAchievements[0].name}`);
+                // If multiple achievements unlocked, show them after a delay
+                for (let i = 1; i < newAchievements.length; i++) {
+                    setTimeout(() => {
+                        showNotification(`Achievement Unlocked: ${newAchievements[i].name}`);
+                    }, i * 3000);
+                }
+                
+                renderAchievements();
+            }
+        }
+
+        // Show notification
+        function showNotification(message) {
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Create particles for background
+        function createParticles() {
+            for (let i = 0; i < 50; i++) {
+                createParticle();
+            }
+        }
+
+        // Create a single particle
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random position and animation delay
+            const left = Math.random() * 100;
+            const delay = Math.random() * 15;
+            
+            particle.style.left = `${left}%`;
+            particle.style.animationDelay = `${delay}s`;
+            
+            particlesContainer.appendChild(particle);
+            
+            // Remove particle after animation completes and create a new one
+            setTimeout(() => {
+                particle.remove();
+                createParticle();
+            }, 15000 + delay * 1000);
+        }
+
+        // Show click effect
+        function showClickEffect(message = '') {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            
+            // Random position around the clicker
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 50 + Math.random() * 50;
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+            
+            effect.style.left = `calc(50% + ${x}px)`;
+            effect.style.top = `calc(50% + ${y}px)`;
+            
+            clicker.appendChild(effect);
+            
+            // Remove effect after animation
+            setTimeout(() => {
+                effect.remove();
+            }, 500);
+            
+            // Show message if provided
+            if (message) {
+                showNotification(message);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Clicker click
+            clicker.addEventListener('click', () => {
+                const now = Date.now();
+                
+                // Calculate click power with active boosts
+                let clickMultiplier = 1;
+                gameState.activeBoosts.forEach(boost => {
+                    clickMultiplier *= boost.multiplier;
+                });
+                
+                const clickValue = gameState.clickPower * gameState.prestigeBonus * clickMultiplier;
+                gameState.clicks += clickValue;
+                
+                // Track click speed for achievements
+                clickCount++;
+                if (now - lastClickTime < 1000) {
+                    clicksInSecond++;
+                } else {
+                    clicksInSecond = 1;
+                }
+                lastClickTime = now;
+                
+                updateDisplays();
+                showClickEffect(`+${formatNumber(clickValue)}`);
+                checkAchievements();
+                saveGame();
+            });
+            
+            // Prestige button
+            prestigeButton.addEventListener('click', () => {
+                if (gameState.clicks >= 10000) {
+                    // Calculate prestige points (1 point per 10,000 clicks)
+                    const points = Math.floor(gameState.clicks / 10000);
+                    gameState.prestigePoints += points;
+                    gameState.prestige++;
+                    totalPrestiges++;
+                    gameState.prestigeBonus = 1 + (gameState.prestigePoints * 0.1);
+                    
+                    // Reset game state but keep prestige data
+                    gameState.clicks = 0;
+                    gameState.clickPower = 1;
+                    gameState.autoClickers = 0;
+                    gameState.cps = 0;
+                    gameState.activeBoosts = [];
+                    
+                    // Reset upgrades
+                    Object.values(upgrades).forEach(category => {
+                        category.forEach(upgrade => {
+                            upgrade.purchased = false;
+                        });
+                    });
+                    
+                    // Reset counters
+                    totalUpgradesPurchased = 0;
+                    totalAutoClickersPurchased = 0;
+                    totalBoostsActivated = 0;
+                    clickCount = 0;
+                    clicksInSecond = 0;
+                    
+                    updateDisplays();
+                    renderUpgrades();
+                    updateBoostIndicator();
+                    showNotification(`Prestiged! Gained ${points} prestige points`);
+                    checkAchievements();
+                    saveGame();
+                }
+            });
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active tab content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Boost upgrades
+            upgrades.boost.forEach(boost => {
+                if (!boost.purchased) {
+                    // For boosts, we don't purchase them, we activate them
+                    const boostElement = document.createElement('div');
+                    boostElement.className = 'upgrade';
+                    boostElement.innerHTML = `
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">${boost.name}</div>
+                            <div class="upgrade-desc">${boost.desc}</div>
+                        </div>
+                        <div class="upgrade-cost">${formatNumber(boost.cost)}</div>
+                    `;
+                    
+                    boostElement.addEventListener('click', () => activateBoost(boost.id));
+                    boostUpgradesContainer.appendChild(boostElement);
+                }
+            });
+        }
+
+        // Main game loop
+        function gameLoop() {
+            const now = Date.now();
+            const deltaTime = (now - gameState.lastUpdate) / 1000;
+            
+            // Update active boosts
+            gameState.activeBoosts = gameState.activeBoosts.filter(boost => {
+                return now < boost.endTime;
+            });
+            updateBoostIndicator();
+            
+            // Add auto clicks
+            if (gameState.cps > 0) {
+                let cpsMultiplier = 1;
+                gameState.activeBoosts.forEach(boost => {
+                    cpsMultiplier *= boost.multiplier;
+                });
+                
+                const autoClicks = gameState.cps * deltaTime * cpsMultiplier;
+                gameState.clicks += autoClicks;
+                updateDisplays();
+                checkAchievements();
+                saveGame();
+            }
+            
+            gameState.lastUpdate = now;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
